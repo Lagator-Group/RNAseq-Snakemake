@@ -1,0 +1,4 @@
+cores: 4
+threads: 8
+strain: 'MG1655'
+reference_genome: 'bin/ref.fna'
