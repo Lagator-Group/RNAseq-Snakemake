@@ -2,7 +2,10 @@ configfile: 'config.yml'
 
 rule all:
     input:
-        expand('data/BAM_sorted/{sample}_sorted.bam', sample=config['samples'])
+        expand('data/BAM_sorted/{sample}_sorted.bam', sample=config['samples']),
+        expand('data/fastQ_trimmed_norRNA/{sample}_seqkit_norRNA.txt', sample=config['samples']),
+        expand('data/fastQ_trimmed_rRNA/{sample}_seqkit_rRNA.txt', sample=config['samples'])
+        
 rule trim_galore:
     input:
         'data/fastq/{sample}_R1.fastq.gz',
@@ -30,10 +33,7 @@ rule bbmap:
         k='31'
     threads: 8
     shell:
-        'bbduk.sh in={input}_1_val_1.fq in2={input}_2_val_2.fq' 
-        'out={output.out1} out2={output.out2}'
-        'outm={output.outm1} outm2={output.outm2}'
-        'k={params.k} ref={params.ribokmers})'
+        'bbduk.sh in={input}/{wildcards.sample}_R1_val_1.fq.gz in2={input}/{wildcards.sample}_R2_val_2.fq.gz out={output.out1} out2={output.out2} outm={output.outm1} outm2={output.outm2} k={params.k} ref={params.ribokmers}'
 
 rule seqkit:
     input:
@@ -42,8 +42,8 @@ rule seqkit:
         rRNA1='data/fastQ_trimmed_rRNA/{sample}_1.fastq.gz',
         rRNA2='data/fastQ_trimmed_rRNA/{sample}_2.fastq.gz'
     output:
-        norRNA='data/fastQ_trimmed_norRNA/seqkit_norRNA.txt',
-        rRNA='data/fastQ_trimmed_rRNA/seqkit_rRNA.txt'
+        norRNA='data/fastQ_trimmed_norRNA/{sample}_seqkit_norRNA.txt',
+        rRNA='data/fastQ_trimmed_rRNA/{sample}_seqkit_rRNA.txt'
     conda:
         'env/seqkit.yml'
     shell:
@@ -64,7 +64,8 @@ rule bowtie:
         strain=config['strain']
     shell:
         'bowtie2-build --threads {threads} {params.ref} {params.strain} &&'
-        'bowtie2 -x {params.strain} -1 {input.norRNA1} -2 {input.norRNA2} -S {output} --no-mixed --threads {threads}'
+        'bowtie2 -x {params.strain} -1 {input.norRNA1} -2 {input.norRNA2} -S {output} --no-mixed --threads {threads} &&'
+        'mv *.bt2 data/Bowtie2_SAM/'
 
 rule bam:
     input:
@@ -83,7 +84,7 @@ rule sort:
     output:
         'data/BAM_sorted/{sample}_sorted.bam'
     conda:
-        'env/samtools.env'
+        'env/samtools.yml'
     threads: 8 
     shell:
         'samtools sort {input} -@ {threads} -O {output}'
