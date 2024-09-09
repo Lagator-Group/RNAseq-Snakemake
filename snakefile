@@ -5,7 +5,7 @@ rule all:
         expand('data/BAM_sorted/{sample}_sorted.bam', sample=config['samples']),
         expand('data/fastQ_trimmed_norRNA/{sample}_seqkit_norRNA.txt', sample=config['samples']),
         expand('data/fastQ_trimmed_rRNA/{sample}_seqkit_rRNA.txt', sample=config['samples'])
-        
+
 rule trim_galore:
     input:
         'data/fastq/{sample}_R1.fastq.gz',
@@ -46,6 +46,7 @@ rule seqkit:
         rRNA='data/fastQ_trimmed_rRNA/{sample}_seqkit_rRNA.txt'
     conda:
         'env/seqkit.yml'
+    threads: 4
     shell:
         'seqkit stats fastQ_trimmed_norRNA/*.fastq.gz > {output.norRNA} ;'
         'seqkit stats fastQ_trimmed_rRNA/*.fastq.gz > {output.rRNA}'
@@ -85,6 +86,6 @@ rule sort:
         'data/BAM_sorted/{sample}_sorted.bam'
     conda:
         'env/samtools.yml'
-    threads: 8 
+    threads: 4 
     shell:
         'samtools sort {input} -@ {threads} -O {output}'
