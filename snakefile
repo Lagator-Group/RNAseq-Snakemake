@@ -57,14 +57,13 @@ rule bowtie:
         'data/Bowtie2_SAM/{sample}.sam'
     conda:
         'env/bowtie.yml'
-    threads: 8
+    threads: config['threads']
     params: 
         ref=config['reference_genome'],
         strain=config['strain']
     shell:
         'bowtie2-build --threads {threads} {params.ref} {params.strain} &&'
-        'bowtie2 -x {params.strain} -1 {input.norRNA1} -2 {input.norRNA2} -S {output} --no-mixed --threads {threads} &&'
-        'mv *.bt2 data/Bowtie2_SAM/'
+        'bowtie2 -x {params.strain} -1 {input.norRNA1} -2 {input.norRNA2} -S {output} --no-mixed --threads {threads}'
 
 rule bam:
     input:
@@ -100,4 +99,5 @@ rule feature_count:
     params:
         gtf=config['gtf']
     shell:
-        'featureCounts -a {params.gtf} -p -T {threads} -t CDS -g gene_id -o {output} data/BAM_sorted/*.bam'
+        'featureCounts -a {params.gtf} -p -T {threads} -t CDS -g gene_id -o {output} data/BAM_sorted/*.bam &&'
+        'rm *.bt2'

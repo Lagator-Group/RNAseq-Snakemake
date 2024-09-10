@@ -1,5 +1,5 @@
-threads: 8
-strain: 'BW25113'
+threads: 16
+strain: 'MG1655'
 reference_genome: 'bin/MG1655.fna'
 gtf: 'bin/MG1655.gtf'
-samples: ['A-B-1']
+samples: ['P-2', 'M-R-2', 'M-F-2', 'M-B-1', 'M-R-1', 'P-1', 'A-B-2', 'A-R-2', 'A-B-1', 'M-B-2', 'A-F-2', 'A-F-1', 'A-R-1', 'M-F-1']
