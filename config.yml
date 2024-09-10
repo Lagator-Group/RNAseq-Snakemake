@@ -1,4 +1,5 @@
 threads: 8
 strain: 'BW25113'
-reference_genome: 'bin/BW25113.fna'
+reference_genome: 'bin/MG1655.fna'
+gtf: 'bin/MG1655.gtf'
 samples: ['A-B-1']

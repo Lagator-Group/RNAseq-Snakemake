@@ -2,10 +2,8 @@ configfile: 'config.yml'
 
 rule all:
     input:
-        expand('data/BAM_sorted/{sample}_sorted.bam', sample=config['samples']),
-        expand('data/fastQ_trimmed_norRNA/{sample}_seqkit_norRNA.txt', sample=config['samples']),
-        expand('data/fastQ_trimmed_rRNA/{sample}_seqkit_rRNA.txt', sample=config['samples'])
-
+        'data/featureCounts/featureCounts_table.txt'
+        
 rule trim_galore:
     input:
         'data/fastq/{sample}_R1.fastq.gz',
@@ -88,4 +86,18 @@ rule sort:
         'env/samtools.yml'
     threads: 4 
     shell:
-        'samtools sort {input} -@ {threads} -O {output}'
+        'samtools sort {input} -@ {threads} -o {output}'
+
+rule feature_count:
+    input:
+        expand('data/BAM_sorted/{sample}_sorted.bam',sample=config['samples'])
+    output:
+        'data/featureCounts/featureCounts_table.txt'
+    conda:
+        'env/subread.yml'
+    threads:
+        config['threads']
+    params:
+        gtf=config['gtf']
+    shell:
+        'featureCounts -a {params.gtf} -p -T {threads} -t CDS -g gene_id -o {output} data/BAM_sorted/*.bam'
