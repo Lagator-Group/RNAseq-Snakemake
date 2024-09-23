@@ -8,3 +8,6 @@
 5. Open `config.yml` and adjust the values accordingly
 6. Activate the snakemake conda env and run `snakemake -c{thread_number} --use-conda --conda-frontend {conda_client}
 7. All results will be output to `data/`
+
+# Analysis JuPyter notebook
+`notebook.ipynb` included for downstream analysis of pipeline output. Sample data provided for formatting help. Install PyDEseq2 with `conda install -c bioconda pydeseq2`.
