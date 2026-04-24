@@ -57,7 +57,7 @@ rule bowtie:
         'data/Bowtie2_SAM/{sample}.sam'
     conda:
         'env/bowtie.yml'
-    threads: config['threads']
+    threads: 16
     params: 
         ref=config['reference_genome'],
         strain=config['strain']
@@ -94,8 +94,7 @@ rule feature_count:
         'data/featureCounts/featureCounts_table.txt'
     conda:
         'env/subread.yml'
-    threads:
-        config['threads']
+    threads: 16
     params:
         gtf=config['gtf']
     shell:
